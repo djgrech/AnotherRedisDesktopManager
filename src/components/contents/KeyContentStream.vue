@@ -2,9 +2,11 @@
   <div>
     <div>
       <el-form :inline="true">
-        <!-- add button -->
         <el-form-item>
+          <!-- add button -->
           <el-button type="primary" @click='showEditDialog({id:"*"})'>{{ $t('message.add_new_line') }}</el-button>
+          <!-- groups info -->
+          <el-button type='primary' @click="initGroups">Groups</el-button>
         </el-form-item>
         <!-- max value -->
         <el-form-item label="Max">
@@ -32,6 +34,54 @@
           <el-button @click="editDialog = false">{{ $t('el.messagebox.cancel') }}</el-button>
           <el-button v-if='!beforeEditItem.contentString' type="primary" @click="editLine">{{ $t('el.messagebox.confirm') }}</el-button>
         </div>
+      </el-dialog>
+
+      <!-- groups info dialog -->
+      <el-dialog width='760px' title='Groups' :visible.sync="groupsVisible">
+        <el-table
+          size='mini'
+          ref='groupsTable'
+          min-height=300
+          @expand-change='initCousumers'
+          @row-click='toggleGroupRow'
+          :data="groups">
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <el-table :data='consumersDict[props.row.name]'>
+                <el-table-column width='62px'>
+                </el-table-column>
+                <el-table-column
+                  label="Consumer Name"
+                  prop="name">
+                </el-table-column>
+                <el-table-column
+                  label="Pending"
+                  prop="pending">
+                </el-table-column>
+                <el-table-column
+                  label="Idle"
+                  prop="idle">
+                </el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="Group Name"
+            prop="name">
+          </el-table-column>
+          <el-table-column
+            label="Consumers"
+            prop="consumers">
+          </el-table-column>
+          <el-table-column
+            label="Pending"
+            prop="pending">
+          </el-table-column>
+          <el-table-column
+            label="Last Delivered Id"
+            prop="last-delivered-id">
+          </el-table-column>
+        </el-table>
       </el-dialog>
     </div>
 
@@ -67,6 +117,14 @@
       </el-table-column>
 
       <el-table-column label="Operation">
+        <template slot="header" slot-scope="scope">
+          <input
+            class="el-input__inner key-detail-filter-value"
+            v-model="filterValue"
+            @keyup.enter='initShow()'
+            :placeholder="$t('message.key_to_search')"/>
+          <i :class='loadingIcon'></i>
+        </template>
         <template slot-scope="scope">
           <el-button type="text" @click="$util.copyToClipboard(JSON.stringify(scope.row.content))" icon="el-icon-document" :title="$t('message.copy')"></el-button>
           <el-button type="text" @click="showEditDialog(scope.row)" icon="el-icon-view" :title="$t('message.detail')"></el-button>
@@ -107,15 +165,20 @@ export default {
       loadMoreDisable: false,
       minId: '-',
       maxId: '+',
-      lastId: '',
+      lastId: Buffer.from(''),
+      oneTimeListLength: 0,
+      filterValue: '',
+      groupsVisible: false,
+      groups: [],
+      consumersDict: {},
     };
   },
-  components: {FormatViewer, InputBinary},
+  components: { FormatViewer, InputBinary },
   props: ['client', 'redisKey'],
   computed: {
     dialogTitle() {
-      return this.beforeEditItem.contentString ? this.$t('message.detail') :
-             this.$t('message.add_new_line');
+      return this.beforeEditItem.contentString ? this.$t('message.detail')
+        : this.$t('message.add_new_line');
     },
   },
   methods: {
@@ -123,48 +186,88 @@ export default {
       resetTable && this.resetTable();
       this.loadingIcon = 'el-icon-loading';
 
-      let maxId = this.lastId ? this.lastId : (this.maxId ? this.maxId : '+');
+      // scan
+      this.listScan();
+      // total lines
+      this.initTotal();
+    },
+    listScan() {
+      const maxId = this.lastId.equals(Buffer.from(''))
+        ? (this.maxId ? this.maxId : '+')
+        : this.lastId;
+      // +1 for padding the repeat
+      const pageSize = this.filterValue ? 500
+        : (this.lineData.length ? this.pageSize + 1 : this.pageSize);
 
       this.client.xrevrangeBuffer([
         this.redisKey,
         maxId,
         this.minId ? this.minId : '-',
         'COUNT',
-        this.pageSize
-      ]).then(reply => {
+        pageSize,
+      ]).then((reply) => {
         if (!reply.length) {
           return this.loadingIcon = '';
         }
 
-        let lineData = [];
+        // last line of this page
+        const lastLine = reply[reply.length - 1];
 
-        for (let stream of reply) {
-          let content = {};
-          let line = {id: stream[0], content: content, uniq: Math.random()};
+        // scanning end
+        if (this.lastId.equals(lastLine[0])) {
+          this.loadingIcon = '';
+          this.oneTimeListLength = 0;
+          return;
+        }
+
+        const lineData = [];
+
+        for (const stream of reply) {
+          const streamId = stream[0];
+          const flatDict = stream[1];
+
+          // skip first line, it is repeat with the last one of previous page
+          if (this.lastId.equals(streamId)) {
+            continue;
+          }
+
+          const content = {};
+          const line = { id: streamId, content, uniq: Math.random() };
           // add key value map
-          for (var i = 0; i < stream[1].length; i+=2) {
-            content[this.$util.bufToString(stream[1][i])] =
-              this.$util.bufToString(stream[1][i+1]);
+          for (let i = 0; i < flatDict.length; i += 2) {
+            content[this.$util.bufToString(flatDict[i])] = this.$util.bufToString(flatDict[i + 1]);
           }
 
           line.contentString = JSON.stringify(line.content);
+
+          // filter k&v
+          if (this.filterValue && !line.contentString.includes(this.filterValue)) {
+            continue;
+          }
           lineData.push(line);
         }
 
         // record last id for next load
-        this.lastId = reply[reply.length - 1][0];
-        // remove the first[repeated with last one of previous page] when append
-        this.lineData.length && lineData.shift();
+        this.lastId = lastLine[0];
 
-        this.lineData = resetTable ? lineData : this.lineData.concat(lineData);
-        this.loadingIcon = '';
-      }).catch(e => {
+        this.oneTimeListLength += lineData.length;
+        this.lineData = this.lineData.concat(lineData);
+
+        if (this.oneTimeListLength >= this.pageSize) {
+          this.loadingIcon = '';
+          this.oneTimeListLength = 0;
+          return;
+        }
+
+        if (this.cancelScanning) {
+          return;
+        }
+        // continue scanning until to pagesize
+        this.listScan();
+      }).catch((e) => {
         this.loadingIcon = '';
         this.$message.error(e.message);
       });
-
-      // total lines
-      this.initTotal();
     },
     initTotal() {
       this.client.xlen(this.redisKey).then((reply) => {
@@ -173,7 +276,8 @@ export default {
     },
     resetTable() {
       this.lineData = [];
-      this.lastId = '';
+      this.lastId = Buffer.from('');
+      this.oneTimeListLength = 0;
       this.loadMoreDisable = false;
     },
     openDialog() {
@@ -188,10 +292,10 @@ export default {
     },
     dumpCommand(item) {
       const lines = item ? [item] : this.lineData;
-      const params = lines.map(line => {
-        let command = `XADD ${this.$util.bufToQuotation(this.redisKey)} ${line.id} `;
-        
-        let dicts = [];
+      const params = lines.map((line) => {
+        const command = `XADD ${this.$util.bufToQuotation(this.redisKey)} ${line.id} `;
+
+        const dicts = [];
         for (const field in line.content) {
           dicts.push(this.$util.bufToQuotation(field), this.$util.bufToQuotation(line.content[field]));
         }
@@ -201,10 +305,10 @@ export default {
 
       // reverse: id asc order
       this.$util.copyToClipboard(params.reverse().join('\n'));
-      this.$message.success({message: this.$t('message.copy_success'), duration: 800});
+      this.$message.success({ message: this.$t('message.copy_success'), duration: 800 });
     },
     editLine() {
-      const afterId = this.editLineItem.id
+      const afterId = this.editLineItem.id;
       const afterValue = this.$refs.formatViewer.getContent();
 
       if (!afterId || !afterValue) {
@@ -215,17 +319,17 @@ export default {
         return this.$message.error(this.$t('message.json_format_failed'));
       }
 
-      let mapList = [];
-      let jsonObj = JSON.parse(afterValue);
+      const mapList = [];
+      const jsonObj = JSON.parse(afterValue);
 
-      for (let k in jsonObj) {
+      for (const k in jsonObj) {
         mapList.push(...[k, jsonObj[k]]);
       }
 
       this.client.xadd(
         this.redisKey,
         afterId,
-        mapList
+        mapList,
       ).then((reply) => {
         // reply is id
         if (reply) {
@@ -237,18 +341,18 @@ export default {
             duration: 1000,
           });
         }
-      }).catch(e => {
+      }).catch((e) => {
         this.$message.error(e.message);
       });
     },
     deleteLine(row) {
       this.$confirm(
         this.$t('message.confirm_to_delete_row_data'),
-        {type: 'warning'}
+        { type: 'warning' },
       ).then(() => {
         this.client.xdel(
           this.redisKey,
-          row.id
+          row.id,
         ).then((reply) => {
           if (reply == 1) {
             this.$message.success({
@@ -263,9 +367,51 @@ export default {
         });
       }).catch(() => {});
     },
+    initGroups() {
+      // reset status
+      this.groups = [];
+      this.consumersDict = {};
+      // show dialog
+      this.groupsVisible = true;
+
+      this.client.call('XINFO', 'GROUPS', this.redisKey).then((reply) => {
+        this.groups = this.formatInfo(reply);
+      });
+    },
+    initCousumers(row, expandedRows) {
+      // exec only when opening
+      if (!expandedRows.filter(item => item.name === row.name).length) {
+        return;
+      }
+
+      this.client.call('XINFO', 'CONSUMERS', this.redisKey, row.name).then((reply) => {
+        this.$set(this.consumersDict, row.name, this.formatInfo(reply));
+      });
+    },
+    toggleGroupRow(row) {
+      this.$refs.groupsTable.toggleRowExpansion(row);
+    },
+    formatInfo(lines) {
+      const formatted = [];
+
+      for (const line of lines) {
+        const dict = {};
+
+        for (let j = 0; j < line.length - 1; j += 2) {
+          dict[line[j]] = line[j + 1];
+        }
+
+        formatted.push(dict);
+      }
+
+      return formatted;
+    },
   },
   mounted() {
     this.initShow();
+  },
+  beforeDestroy() {
+    this.cancelScanning = true;
   },
 };
 </script>

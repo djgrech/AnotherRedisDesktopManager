@@ -4,6 +4,7 @@
 
 <script type="text/javascript">
 import JsonEditor from '@/components/JsonEditor';
+const JSONbig = require('@qii404/json-bigint')({ useNativeBigInt: false });
 
 const zlib = require('zlib');
 
@@ -16,22 +17,22 @@ export default {
 
       if (typeof formatStr === 'string') {
         if (this.$util.isJson(formatStr)) {
-          return JSON.parse(formatStr);
+          return JSONbig.parse(formatStr);
         }
 
         return formatStr;
       }
 
-      return 'Zlib DeflateRaw Parse Failed!';
+      return 'Zlib Deflate Parse Failed!';
     },
     formatStr() {
-      return this.$util.zippedToString(this.content, 'deflateRaw');
+      return this.$util.zippedToString(this.content, 'deflate');
     },
   },
   methods: {
     getContent() {
       const content = this.$refs.editor.getRawContent(true);
-      return zlib.deflateRawSync(content);
+      return zlib.deflateSync(content);
     },
     copyContent() {
       return this.formatStr;

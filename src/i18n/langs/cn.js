@@ -7,7 +7,7 @@ const cn = {
     del_connection: '删除连接',
     close_connection: '关闭连接',
     add_new_line: '添加新行',
-    dump_to_clipboard: "复制为命令",
+    dump_to_clipboard: '复制为命令',
     redis_version: 'Redis版本',
     process_id: '进程ID',
     used_memory: '已用内存',
@@ -33,6 +33,7 @@ const cn = {
     add_success: '添加成功',
     add_failed: '添加失败',
     value_exists: '值已存在',
+    value_not_exists: '该值不存在',
     refresh_success: '刷新成功',
     click_enter_to_rename: '点击或者按Enter键来重命名',
     click_enter_to_ttl: '点击或者按Enter键来修改过期时间',
@@ -76,6 +77,7 @@ const cn = {
     manual_update: '手动下载',
     retry_too_many_times: '尝试重连次数过多，请检查Server状态',
     key_to_search: '输入关键字搜索',
+    search_connection: '搜索链接',
     begin_update: '更新',
     ignore_this_version: '忽略该版本',
     check_update: '检查更新',
@@ -85,11 +87,11 @@ const cn = {
     update_error: '更新失败',
     update_downloading: '下载中...',
     update_download_progress: '下载进度',
-    update_downloaded: "更新下载完成，重启客户端生效.\
-    [Tips]: 如果您使用的是Windows，关闭软件后，请等待桌面图标刷新到正常状态(约10秒)，然后再重新打开即可",
+    update_downloaded: '更新下载完成，重启客户端生效.\
+    [Tips]: 如果您使用的是Windows，关闭软件后，请等待桌面图标刷新到正常状态(约10秒)，然后再重新打开即可',
     mac_not_support_auto_update: 'Mac暂时不支持自动更新，请手动<a href="https://github.com/qishibo/AnotherRedisDesktopManager/releases">下载</a>后重新安装，\
-    或者执行brew reinstall --cask another-redis-desktop-manager \
-    <br><br>🧡如果您觉得好用，可以通过<a href="https://apps.apple.com/app/id1516451072">AppStore</a>赞助，并由AppStore帮您自动更新',
+    或者执行<br><code>brew reinstall --cask another-redis-desktop-manager </code>\
+    <br><hr><br>❤️如果您觉得好用，可以通过<a href="https://apps.apple.com/app/id1516451072">AppStore</a>赞助，并由AppStore帮您自动更新',
     font_family: '字体选择',
     font_faq_title: '字体设置说明',
     font_faq: '1. 可以设置多个字体<br>2. 字体选择是有序的，建议首先选择英文字体，然后再选择中文字体<br>\
@@ -164,6 +166,9 @@ const cn = {
     close_left: '关闭左侧标签',
     close_right: '关闭右侧标签',
     close_other: '关闭其他标签',
+    slow_log: '慢查询',
+    load_current_folder: '只加载该文件夹',
+    custom_name: '自定义名称',
   },
 };
 

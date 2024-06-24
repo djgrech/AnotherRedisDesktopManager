@@ -28,13 +28,13 @@
 
 <script>
 import KeyHeader from '@/components/KeyHeader';
-import KeyContentString from '@/components/KeyContentString';
-import KeyContentHash from '@/components/KeyContentHash';
-import KeyContentSet from '@/components/KeyContentSet';
-import KeyContentZset from '@/components/KeyContentZset';
-import KeyContentList from '@/components/KeyContentList';
-import KeyContentStream from '@/components/KeyContentStream';
-import KeyContentReJson from '@/components/KeyContentReJson';
+import KeyContentString from '@/components/contents/KeyContentString';
+import KeyContentHash from '@/components/contents/KeyContentHash';
+import KeyContentSet from '@/components/contents/KeyContentSet';
+import KeyContentZset from '@/components/contents/KeyContentZset';
+import KeyContentList from '@/components/contents/KeyContentList';
+import KeyContentStream from '@/components/contents/KeyContentStream';
+import KeyContentReJson from '@/components/contents/KeyContentReJson';
 
 export default {
   data() {
@@ -42,8 +42,14 @@ export default {
   },
   props: ['client', 'redisKey', 'keyType', 'hotKeyScope'],
   components: {
-    KeyHeader, KeyContentString, KeyContentHash, KeyContentSet, KeyContentZset,
-    KeyContentList, KeyContentStream, KeyContentReJson
+    KeyHeader,
+    KeyContentString,
+    KeyContentHash,
+    KeyContentSet,
+    KeyContentZset,
+    KeyContentList,
+    KeyContentStream,
+    KeyContentReJson,
   },
   computed: {
     componentName() {
@@ -54,11 +60,11 @@ export default {
     getComponentNameByType(keyType) {
       const map = {
         string: 'KeyContentString',
-        hash  : 'KeyContentHash',
-        zset  : 'KeyContentZset',
-        set   : 'KeyContentSet',
-        list  : 'KeyContentList',
-        stream  : 'KeyContentStream',
+        hash: 'KeyContentHash',
+        zset: 'KeyContentZset',
+        set: 'KeyContentSet',
+        list: 'KeyContentList',
+        stream: 'KeyContentStream',
         'ReJSON-RL': 'KeyContentReJson',
       };
 
@@ -66,22 +72,24 @@ export default {
         return map[keyType];
       }
       // type not support, such as bf
-      else {
-        this.$message.error(this.$t('message.key_type_not_support'));
-        return '';
-      }
+
+      this.$message.error(this.$t('message.key_type_not_support'));
+      return '';
     },
     refreshContent() {
-      this.client.exists(this.redisKey).then(reply => {
+      this.client.exists(this.redisKey).then((reply) => {
         if (reply == 0) {
           // clear interval if auto refresh opened
-          this.$refs.keyHeader.removeInterval();
-          return this.$message.error(this.$t('message.key_not_exists'));
+          // this.$refs.keyHeader.removeInterval();
+          return this.$message.error({
+            message: this.$t('message.key_not_exists'),
+            duration: 1000,
+          });
         }
 
         this.$refs.keyContent && this.$refs.keyContent.initShow();
-      }).catch(e => {
-        this.$message.error('Exists Error: ' + e.message);
+      }).catch((e) => {
+        this.$message.error(`Exists Error: ${e.message}`);
       });
     },
     dumpCommand() {

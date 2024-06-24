@@ -90,11 +90,29 @@ export default {
     const phpSerialize = require('php-serialize');
 
     try {
-      phpSerialize.unserialize(str);
-      return true;
+      // phpSerialize.unserialize(str);
+      return phpSerialize.isSerialized(str.toString());
     } catch (e) {}
 
     return false;
+  },
+  isJavaSerialize(buf) {
+    try {
+      const { ObjectInputStream } = require('java-object-serialization');
+      const result = (new ObjectInputStream(buf)).readObject();
+      return typeof result === 'object';
+    } catch (e) {
+      return false;
+    }
+  },
+  isPickle(buf) {
+    try {
+      const { Parser } = require('pickleparser');
+      const result = (new Parser()).parse(buf);
+      return !!result;
+    } catch (e) {
+      return false;
+    }
   },
   isMsgpack(buf) {
     const { decode } = require('algo-msgpack-with-bigint');
@@ -364,5 +382,18 @@ export default {
   },
   randomString(len = 5) {
     return Math.random().toString(36).substr(-len);
+  },
+  createAndDownloadFile(fileName, content) {
+    const aTag = document.createElement('a');
+    const blob = new Blob([content]);
+
+    aTag.download = fileName;
+    aTag.href = URL.createObjectURL(blob);
+
+    aTag.click();
+    URL.revokeObjectURL(blob);
+  },
+  arrayChunk(arr, size) {
+    return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.splice(0, size));
   },
 };

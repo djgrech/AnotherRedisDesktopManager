@@ -7,7 +7,7 @@ const tr = {
     del_connection: 'Bağlantıyı Sil',
     close_connection: 'Bağlantıyı Kapat',
     add_new_line: 'Yeni Satır Ekle',
-    dump_to_clipboard: "Komut olarak kopyala",
+    dump_to_clipboard: 'Komut olarak kopyala',
     redis_version: 'Redis Sürümü',
     process_id: 'Süreç Kimliği',
     used_memory: 'Kullanılan Bellek',
@@ -33,6 +33,7 @@ const tr = {
     add_success: 'Ekleme Başarılı',
     add_failed: 'Ekleme Başarısız',
     value_exists: 'Değer Mevcut',
+    value_not_exists: 'Değer mevcut değil',
     refresh_success: 'Yenileme Başarılı',
     click_enter_to_rename: 'Yeniden Adlandırmak için Tıklayın veya Enter Tuşuna Basın',
     click_enter_to_ttl: 'TTLyi Değiştirmek için Tıklayın veya Enter Tuşuna Basın',
@@ -76,6 +77,7 @@ const tr = {
     manual_update: 'Manuel İndirme',
     retry_too_many_times: 'Yeniden Bağlanmak İçin Çok Fazla Deneme Yapıldı. Lütfen Sunucu Durumunu Kontrol Edin',
     key_to_search: 'Anahtar Kelime Araması',
+    search_connection: 'Bağlantıyı Ara',
     begin_update: 'Güncelle',
     ignore_this_version: 'Bu sürümü yok sayın',
     check_update: 'Güncellemeleri Denetle',
@@ -88,8 +90,8 @@ const tr = {
     update_downloaded: 'Güncelleme İndirme Tamamlandı, Lütfen Uygulamanızı Yeniden Başlatın.\
     [Tips]: Windows kullanıyorsanız, uygulamayı kapattıktan sonra masaüstü simgesinin normal duruma (yaklaşık 10 saniye) dönmesini bekleyin ve ardından yeniden açabilirsiniz',
     mac_not_support_auto_update: 'Mac Otomatik Güncellemeyi Desteklemez, Lütfen Manuel Olarak <a href="https://github.com/qishibo/AnotherRedisDesktopManager/releases">İndirin</a> ve Yükleyin,\
-    veya Yükleme Komutunu Çalıştırın "brew reinstall --cask another-redis-desktop-manager"\
-    <br><br>🧡sizin için yararlı olursa, <a href="https://apps.apple.com/app/id1516451072">AppStore</a> üzerinden sponsor olabilirsiniz ve AppStore sizin için otomatik olarak güncelleyecektir.',
+    veya Yükleme Komutunu Çalıştırın <br><code>brew reinstall --cask another-redis-desktop-manager </code>\
+    <br><hr><br>❤️sizin için yararlı olursa, <a href="https://apps.apple.com/app/id1516451072">AppStore</a> üzerinden sponsor olabilirsiniz ve AppStore sizin için otomatik olarak güncelleyecektir.',
     font_family: 'Yazı Tipi Ailesi',
     font_faq_title: 'Yazı Tipi Ayar Talimatları',
     font_faq: '1. Birden fazla yazı tipi ayarlanabilir<br>\
@@ -164,6 +166,9 @@ const tr = {
     close_left: 'Sol Sekmeleri Kapat',
     close_right: 'Sağ Sekmeleri Kapat',
     close_other: 'Diğer Sekmeleri Kapat',
+    slow_log: 'Yavaş Sorgu',
+    load_current_folder: 'Yalnızca Geçerli Klasörü Yükle',
+    custom_name: 'Özel Ad',
   },
 };
 

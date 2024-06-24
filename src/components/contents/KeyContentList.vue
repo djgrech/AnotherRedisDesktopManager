@@ -4,7 +4,7 @@
       <!-- add button -->
       <el-form :inline="true">
         <el-form-item>
-          <el-button type="primary" @click="showEditDialog({})">{{ $t('message.add_new_line') }}</el-button>
+          <el-button type="primary" @click='showEditDialog({})'>{{ $t('message.add_new_line') }}</el-button>
         </el-form-item>
       </el-form>
 
@@ -29,7 +29,7 @@
       border
       size='mini'
       min-height=300
-      :data="setData">
+      :data="listData">
       <el-table-column
         type="index"
         :label="'ID (Total: ' + total + ')'"
@@ -69,7 +69,7 @@
     <div class='content-more-container'>
       <el-button
         size='mini'
-        @click='initShow(false)'
+        @click='loadMore'
         :icon='loadingIcon'
         :disabled='loadMoreDisable'
         class='content-more-btn'>
@@ -92,23 +92,22 @@ export default {
       total: 0,
       filterValue: '',
       editDialog: false,
-      setData: [], // {value: xxx}
+      listData: [], // {value: xxx}
       beforeEditItem: {},
       editLineItem: {},
       loadingIcon: '',
       pageSize: 100,
-      searchPageSize: 1000,
+      pageIndex: 0,
       oneTimeListLength: 0,
-      scanStream: null,
       loadMoreDisable: false,
     };
   },
   props: ['client', 'redisKey'],
-  components: {PaginationTable, FormatViewer, ScrollToTop},
+  components: { PaginationTable, FormatViewer, ScrollToTop },
   computed: {
     dialogTitle() {
-      return this.beforeEditItem.value ? this.$t('message.edit_line') :
-             this.$t('message.add_new_line');
+      return this.beforeEditItem.value ? this.$t('message.edit_line')
+        : this.$t('message.add_new_line');
     },
   },
   methods: {
@@ -116,73 +115,74 @@ export default {
       resetTable && this.resetTable();
       this.loadingIcon = 'el-icon-loading';
 
-      if (!this.scanStream) {
-        this.initScanStream();
-      }
-
-      else {
-        this.oneTimeListLength = 0;
-        this.scanStream.resume();
-      }
-
+      // scan
+      this.listScan();
       // total lines
       this.initTotal();
     },
-    initTotal() {
-      this.client.scard(this.redisKey).then((reply) => {
-        this.total = reply;
-      }).catch(e => {});
-    },
-    resetTable() {
-      // stop scanning first, #815
-      this.scanStream && this.scanStream.pause();
-      this.setData = [];
-      this.scanStream = null;
-      this.oneTimeListLength = 0;
-      this.loadMoreDisable = false;
-    },
-    initScanStream() {
-      const scanOption = {match: this.getScanMatch(), count: this.pageSize};
-      scanOption.match != '*' && (scanOption.count = this.searchPageSize);
+    listScan() {
+      const { filterValue } = this;
+      const pageSize = filterValue ? 500 : this.pageSize;
 
-      this.scanStream = this.client.sscanBufferStream(
-        this.redisKey,
-        scanOption
-      );
+      const start = pageSize * this.pageIndex;
+      const end = start + pageSize - 1;
 
-      this.scanStream.on('data', reply => {
-        let setData = [];
+      this.client.lrangeBuffer([this.redisKey, start, end]).then((reply) => {
+        // scanning end
+        if (!reply || !reply.length) {
+          this.loadingIcon = '';
+          this.loadMoreDisable = true;
+          return;
+        }
 
+        const listData = [];
         for (const i of reply) {
-          setData.push({
+          if (filterValue) {
+            if (!i.includes(filterValue)) {
+              continue;
+            }
+          }
+
+          listData.push({
             value: i,
-            // valueDisplay: this.$util.bufToString(i),
             uniq: Math.random(),
           });
         }
 
-        this.oneTimeListLength += setData.length;
-        this.setData = this.setData.concat(setData);
+        this.oneTimeListLength += listData.length;
+        this.listData = this.listData.concat(listData);
 
         if (this.oneTimeListLength >= this.pageSize) {
-          this.scanStream.pause();
           this.loadingIcon = '';
+          this.oneTimeListLength = 0;
+          return;
         }
-      });
 
-      this.scanStream.on('end', () => {
-        this.loadingIcon = '';
-        this.loadMoreDisable = true;
-      });
-
-      this.scanStream.on('error', e => {
+        if (this.cancelScanning) {
+          return;
+        }
+        // continue scanning until to pagesize
+        this.loadMore();
+      }).catch((e) => {
         this.loadingIcon = '';
         this.loadMoreDisable = true;
         this.$message.error(e.message);
       });
     },
-    getScanMatch() {
-      return this.filterValue ? `*${this.filterValue}*` : '*';
+    initTotal() {
+      this.client.llen(this.redisKey).then((reply) => {
+        this.total = reply;
+      }).catch((e) => {});
+    },
+    resetTable() {
+      this.listData = [];
+      this.pageIndex = 0;
+      this.oneTimeListLength = 0;
+      this.loadMoreDisable = false;
+    },
+    loadMore() {
+      this.pageIndex++;
+      this.listScan();
     },
     openDialog() {
       this.$nextTick(() => {
@@ -197,18 +197,16 @@ export default {
       this.rowUniq = row.uniq;
     },
     dumpCommand(item) {
-      const lines = item ? [item] : this.setData;
-      const params = lines.map(line => {
-        return this.$util.bufToQuotation(line.value);
-      });
+      const lines = item ? [item] : this.listData;
+      const params = lines.map(line => this.$util.bufToQuotation(line.value));
 
-      const command = `SADD ${this.$util.bufToQuotation(this.redisKey)} ${params.join(' ')}`;
+      const command = `RPUSH ${this.$util.bufToQuotation(this.redisKey)} ${params.join(' ')}`;
       this.$util.copyToClipboard(command);
-      this.$message.success({message: this.$t('message.copy_success'), duration: 800});
+      this.$message.success({ message: this.$t('message.copy_success'), duration: 800 });
     },
     editLine() {
       const key = this.redisKey;
-      const client = this.client;
+      const { client } = this;
       const before = this.beforeEditItem;
       const afterValue = this.$refs.formatViewer.getContent();
 
@@ -222,70 +220,81 @@ export default {
       }
 
       this.editDialog = false;
+      const newLine = { value: afterValue, uniq: Math.random() };
 
-      client.sadd(
-        key,
-        afterValue
-      ).then((reply) => {
-        // add success
-        if (reply == 1) {
-          // edit key remove previous value
-          if (before.value) {
-            client.srem(key, before.value);
-          }
+      // edit line
+      if (this.rowUniq) {
+        // fix #1082, keep list order
+        client.linsert(key, 'AFTER', before.value, afterValue).then((reply) => {
+          if (reply > 0) {
+            client.lrem(key, 1, before.value);
+            // this.initShow(); // do not reinit, #786
+            this.$util.listSplice(this.listData, this.rowUniq, newLine);
 
-          // this.initShow(); // do not reinit, #786
-          const newLine = {value: afterValue, uniq: Math.random()};
-          // edit line
-          if (this.rowUniq) {
-            this.$util.listSplice(this.setData, this.rowUniq, newLine);
+            this.$message.success({
+              message: this.$t('message.modify_success'),
+              duration: 1000,
+            });
           }
-          // new line
+          // reply == -1, before.value has been removed
           else {
-            this.setData.push(newLine);
-            this.total++;
+            this.$message.error({
+              message: `${this.$t('message.modify_failed')}, ${this.$t('message.value_not_exists')}`,
+              duration: 2000,
+            });
           }
+        }).catch((e) => { this.$message.error(e.message); });
+      }
+      // new line
+      else {
+        client.rpush(key, afterValue).then((reply) => {
+          if (reply > 0) {
+            // this.initShow(); // do not reinit, #786
+            this.listData.push(newLine);
+            this.total++;
 
-          this.$message.success({
-            message: this.$t('message.add_success'),
-            duration: 1000,
-          });
-        }
-
-        // value exists
-        else if (reply == 0) {
-          this.$message.error({
-            message: this.$t('message.value_exists'),
-            duration: 1000,
-          });
-        }
-      }).catch(e => {this.$message.error(e.message);});
+            this.$message.success({
+              message: this.$t('message.add_success'),
+              duration: 1000,
+            });
+          }
+        }).catch((e) => { this.$message.error(e.message); });
+      }
     },
     deleteLine(row) {
       this.$confirm(
         this.$t('message.confirm_to_delete_row_data'),
-        { type: 'warning' }
+        { type: 'warning' },
       ).then(() => {
-        this.client.srem(
+        this.client.lrem(
           this.redisKey,
-          row.value
+          1,
+          row.value,
         ).then((reply) => {
-          if (reply == 1) {
+          if (reply > 0) {
             this.$message.success({
               message: this.$t('message.delete_success'),
               duration: 1000,
             });
 
             // this.initShow(); // do not reinit, #786
-            this.$util.listSplice(this.setData, row.uniq);
+            this.$util.listSplice(this.listData, row.uniq);
             this.total--;
+          } else {
+            this.$message.error({
+              message: this.$t('message.delete_failed'),
+              duration: 1000,
+            });
           }
-        }).catch(e => {this.$message.error(e.message);});
+        }).catch((e) => { this.$message.error(e.message); });
       }).catch(() => {});
     },
   },
   mounted() {
     this.initShow();
+  },
+  beforeDestroy() {
+    this.cancelScanning = true;
   },
 };
 </script>
