@@ -62,18 +62,18 @@ export default {
     if (returnList) {
       for (let i = 0; i < importedConnections.length; i++) {
         const r = importedConnections[i];
-        connections[r.name] = {
-          host: r.ip,
+        const name = `${r.name}_${r.environment}_${r.type}`;
+        connections[name] = {
+          host: r.ip[0],
           port: 6379,
           separator: ':',
-          name: r.name,
+          name,
         };
       }
 
       connections = Object.keys(connections).map(key => connections[key]);
 
       this.sortConnections(connections);
-      console.log(connections);
     }
 
     return connections;
