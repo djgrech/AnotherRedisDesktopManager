@@ -1,7 +1,8 @@
+import { ContextExclusionPlugin } from 'webpack';
 import utils from './util';
 
 const { randomString } = utils;
-
+let importedConnections = [];
 export default {
   getSetting(key) {
     let settings = localStorage.getItem('settings');
@@ -45,31 +46,31 @@ export default {
   saveCustomFormatters(formatters = []) {
     return localStorage.setItem('customFormatters', JSON.stringify(formatters));
   },
-  addConnection(connection) {
-    this.editConnectionByKey(connection, '');
+  async addConnection(connection) {
+    await this.editConnectionByKey(connection, '');
   },
   async getConnections(returnList = false) {
     let connections = localStorage.connections || '{}';
 
     connections = JSON.parse(connections);
 
-    console.log("hello");
-    // var response = fetch('http://localhost:3001/api/pods')
-    //   .then(res => res.json())
-    //   .then(data=>console.log(data));
-    //connections = {};
-
-    var response = await fetch('http://localhost:3001/api/pods');
-    var result = await response.json();
-
-    console.log(result);
+    if (importedConnections.length === 0) {
+      const response = await fetch('http://localhost:3001/api/pods');
+      importedConnections = await response.json();
+    }
 
     if (returnList) {
-      connections["test"] = {host:'localhost', port:7000, separator: ":", name:"localhost@7000"};
+      for (let i = 0; i < importedConnections.length; i++) {
+        const r = importedConnections[i];
+        connections[r.name] = {
+          host: r.ip,
+          port: 6379,
+          separator: ':',
+          name: r.name,
+        };
+      }
+
       connections = Object.keys(connections).map(key => connections[key]);
-
-
-     // connections.addConnection({host:'test', port:7000, separator: ":", name:"localhost@7000"});
 
       this.sortConnections(connections);
       console.log(connections);
@@ -77,10 +78,10 @@ export default {
 
     return connections;
   },
-  editConnectionByKey(connection, oldKey = '') {
+  async editConnectionByKey(connection, oldKey = '') {
     oldKey = connection.key || oldKey;
 
-    const connections = this.getConnections();
+    const connections = await this.getConnections();
     delete connections[oldKey];
 
     this.updateConnectionName(connection, connections);
@@ -97,9 +98,9 @@ export default {
     connections[newKey] = connection;
     this.setConnections(connections);
   },
-  editConnectionItem(connection, items = {}) {
+  async editConnectionItem(connection, items = {}) {
     const key = this.getConnectionKey(connection);
-    const connections = this.getConnections();
+    const connections = await this.getConnections();
 
     if (!connections[key]) {
       return;
@@ -207,5 +208,5 @@ export default {
     }
 
     willRemovedKeys.forEach(k => localStorage.removeItem(k));
-  }
+  },
 };
