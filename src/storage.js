@@ -2,7 +2,6 @@ import { ContextExclusionPlugin } from 'webpack';
 import utils from './util';
 
 const { randomString } = utils;
-let importedConnections = [];
 export default {
   getSetting(key) {
     let settings = localStorage.getItem('settings');
@@ -54,20 +53,18 @@ export default {
 
     connections = JSON.parse(connections);
 
-    if (importedConnections.length === 0) {
-      const response = await fetch('http://localhost:3001/api/pods');
-      importedConnections = await response.json();
-    }
+    const response = await fetch('http://localhost:3001/api/pods');
+    const result = await response.json();
 
     if (returnList) {
-      for (let i = 0; i < importedConnections.length; i++) {
-        const r = importedConnections[i];
+      for (let i = 0; i < result.length; i++) {
+        const r = result[i];
         const name = `${r.name}_${r.environment}_${r.type}`;
         connections[name] = {
           host: r.ip[0],
           port: 6379,
           separator: ':',
-          name,
+          name: `${name} ${(r.selected ? '[active]' : '')}`,
         };
       }
 
