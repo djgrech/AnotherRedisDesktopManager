@@ -10,7 +10,7 @@
           </el-form-item>
 
           <el-form-item :label="$t('message.password')">
-            <InputPassword v-model="connection.auth" placeholder="Auth"></InputPassword>
+            <InputPassword v-model="connection.auth" :hidepass="editMode" placeholder="Auth"></InputPassword>
           </el-form-item>
 
           <el-form-item :label="$t('message.connection_name')">
@@ -147,6 +147,11 @@
               placeholder='SSL Public Key Pem (cert)'>
               </FileInput>
           </el-form-item>
+
+          <!-- SNI -->
+          <el-form-item label="SNI">
+            <el-input v-model="connection.sslOptions.servername" autocomplete="off" placeholder='SNI Servername'></el-input>
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
@@ -214,6 +219,7 @@ export default {
           key: '',
           cert: '',
           ca: '',
+          servername: '',
         },
         sentinelOptions: {
           masterName: 'mymaster',

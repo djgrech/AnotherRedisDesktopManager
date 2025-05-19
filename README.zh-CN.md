@@ -1,6 +1,6 @@
 # Another Redis Desktop Manager
 
-<img align="right" width="120" src="https://cdn.jsdelivr.net/gh/qishibo/img/ano-square-icon-128.png">
+<img align="right" width="110" src="https://cdn.jsdelivr.net/gh/qishibo/img/ardm/202411081958294.png">
 
 > 🚀🚀🚀 更快、更好、更稳定的Redis桌面(GUI)管理客户端，兼容Windows、Mac、Linux，性能出众，轻松加载海量键值
 
@@ -26,7 +26,7 @@
 - 可以在[github](https://github.com/qishibo/AnotherRedisDesktopManager/releases) 或者 [gitee](https://gitee.com/qishibo/AnotherRedisDesktopManager/releases)下载`AppImage`包，`chmod +x`, 双击运行
 - 或者通过**snap**: `sudo snap install another-redis-desktop-manager`
 **Tips**: 如果选择私钥时提示权限不足，执行`sudo snap connect another-redis-desktop-manager:ssh-keys`来获取对~/.ssh文件夹的权限
-<br/>[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/another-redis-desktop-manager)
+<br/>[![Get it from the Snap Store](https://cdn.jsdelivr.net/gh/qishibo/img/ardm/202411080845423.svg)](https://snapcraft.io/another-redis-desktop-manager)
 
 ## Mac
 
@@ -38,21 +38,42 @@
 <br/>[![app store](https://cdn.jsdelivr.net/gh/qishibo/img/avail_app_store180.svg)](https://apps.apple.com/app/id1516451072)
 
 
-
 ## 起飞!
 
-![redis status dark](https://cdn.jsdelivr.net/gh/qishibo/img/1630655843497-status.png)
+![redis status dark](https://cdn.jsdelivr.net/gh/qishibo/img/ardm/202411081318491.png)
 
-![redis key hash dark](https://cdn.jsdelivr.net/gh/qishibo/img/1630655844559-str.png)
+![redis key dark](https://cdn.jsdelivr.net/gh/qishibo/img/ardm/202411081318490.png)
 
-![redis console dark](https://cdn.jsdelivr.net/gh/qishibo/img/1630655846107-cli.png)
+![redis exec log](https://cdn.jsdelivr.net/gh/qishibo/img/ardm/202411081318492.png)
 
-![redis exec log](https://cdn.jsdelivr.net/gh/qishibo/img/1630655847740-log.png)
+
+## 贡献者
+
+在这里感谢所有为此项目做出贡献的人.
+[![contributors](https://opencollective.com/AnotherRedisDesktopManager/contributors.svg?width=890&button=false)](https://github.com/qishibo/AnotherRedisDesktopManager/graphs/contributors)
+[![backers](https://opencollective.com/AnotherRedisDesktopManager/backers.svg)](https://opencollective.com/AnotherRedisDesktopManager)
+
+<!-- sponsors --><a href="https://github.com/brunoksato"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;2257501?u&#x3D;62e7db432487ab19a9e11db051198d91fb42fe95&amp;v&#x3D;4" width="60px" alt="Bruno Sato" /></a><a href="https://github.com/overtrue"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;1472352?u&#x3D;72f261973db954faf4a64987ee3f7e7baf423ded&amp;v&#x3D;4" width="60px" alt="安正超" /></a><a href="https://github.com/wehnertb"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;6706492?u&#x3D;23b3c316d88684d8cbce4947d9a9564c05fa48e6&amp;v&#x3D;4" width="60px" alt="Bill" /></a><a href="https://github.com/RobinTao"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;3703152?v&#x3D;4" width="60px" alt="" /></a><a href="https://github.com/hfoxy"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;1254033?u&#x3D;630787b85016572cb1f9d87a7fbd77314b084bb9&amp;v&#x3D;4" width="60px" alt="Harry Fox" /></a><a href="https://github.com/maniappstudios"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;91392014?v&#x3D;4" width="60px" alt="Mani App Studios" /></a><a href="https://github.com/BWICompanies"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;28601356?v&#x3D;4" width="60px" alt="BWI Companies, Inc." /></a><a href="https://github.com/dragonflydb"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;104819355?v&#x3D;4" width="60px" alt="DragonflyDB" /></a><a href="https://github.com/gauravn00b"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;70876227?v&#x3D;4" width="60px" alt="" /></a><a href="https://github.com/roostinghawk"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;5466611?u&#x3D;6c5bcb3a5e4cd3bc128052dcce3a58ba00e742f9&amp;v&#x3D;4" width="60px" alt="liuwei" /></a><a href="https://github.com/status2xx"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;40201780?u&#x3D;ba9c0f10211ecf2af64ec335a5df13637e313060&amp;v&#x3D;4" width="60px" alt="小新" /></a><a href="https://github.com/mikeallisonJS"><img src="https://images.weserv.nl/?h=120&w=120&mask=circle&url=https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;838371?u&#x3D;6c8a7a989e12d67117976a5ec155e022a5d83499&amp;v&#x3D;4" width="60px" alt="Mike Allison" /></a><!-- sponsors -->
+
+
+## 赞助
+
+- 给我点个Star⭐⭐ 或者 [Producthunt](https://www.producthunt.com/posts/another-redis-desktop-manager)点个赞
+- 通过 [OpenCollective](https://opencollective.com/AnotherRedisDesktopManager)或者[Github Sponsor](https://github.com/sponsors/qishibo)
+- 如果你是Mac用户, 也可以通过从[App Store](https://apps.apple.com/app/id1516451072)购买来赞助, 然后应用商店会为你自动更新
+<br>[![app store](https://cdn.jsdelivr.net/gh/qishibo/img/avail_app_store180.svg)](https://apps.apple.com/app/id1516451072)
+- 如果你是Windows用户，还可以通过从[Win Store](https://www.microsoft.com/store/apps/9MTD84X0JFHZ)购买来赞助，商店就会帮你自动更新
+<br>[![windows store](https://cdn.jsdelivr.net/gh/qishibo/img/windows-store-icon182-56.png)](https://www.microsoft.com/store/apps/9MTD84X0JFHZ)
+- 微信赞助码 [觉得好用，赞助一些大白兔🐇奶糖!]
+
+  <img width="150px" src="https://cdn.jsdelivr.net/gh/qishibo/img/202109031655807.jpeg" />
 
 
 ## 里程碑
 
-- 2024-06-06: 搜索链接支持(>=4)
+- 2024-11-03: 支持从文件批量导入命令并执行
+- 2024-10-07: Hash键值支持TTL(Redis>=7.4)
+- 2024-06-06: 搜索链接支持
 - 2024-04-10: DB自定义名称支持
 - 2024-02-21: Java/Pickle解码视图支持
 - 2024-02-15: STEAM支持查看群组和消费者
@@ -75,7 +96,7 @@
 - 2021-02-03: 多选支持 && Msgpack视图支持
 - 2020-12-30: 树状列表
 - 2020-11-03: Binary视图 && SSH Passparse\Timeout 支持
-- 2020-09-04: SSH 集群支持 
+- 2020-09-04: SSH 集群支持
 - 2020-06-18: SSL/TLS 支持
 - 2020-04-28: 页面缩放 && 大键值Scan操作 && 自动Json
 - 2020-04-18: 不可见键值对支持
@@ -133,9 +154,6 @@ sudo apt install libfontconfig1-dev
 ### Windows
 
 ``` bash
-# install build tools for the first time, just execute once
-npm install -g windows-build-tools
-
 # clone code
 git clone https://github.com/qishibo/AnotherRedisDesktopManager.git --depth=1
 cd AnotherRedisDesktopManager
@@ -173,26 +191,6 @@ npm run pack:mac
 # on linux
 npm run pack:linux
 ```
-
-
-## 赞助
-
-- 给我点个Star⭐⭐ 或者 [Producthunt](https://www.producthunt.com/posts/another-redis-desktop-manager)点个赞
-- 通过 [OpenCollective](https://opencollective.com/AnotherRedisDesktopManager)
-- 如果你是Mac用户, 也可以通过从[App Store](https://apps.apple.com/app/id1516451072)购买来赞助, 然后应用商店会为你自动更新
-<br>[![app store](https://cdn.jsdelivr.net/gh/qishibo/img/avail_app_store180.svg)](https://apps.apple.com/app/id1516451072)
-- 如果你是Windows用户，还可以通过从[Win Store](https://www.microsoft.com/store/apps/9MTD84X0JFHZ)购买来赞助，商店就会帮你自动更新
-<br>[![windows store](https://cdn.jsdelivr.net/gh/qishibo/img/windows-store-icon182-56.png)](https://www.microsoft.com/store/apps/9MTD84X0JFHZ)
-- 微信赞助码 [觉得好用，赞助一些大白兔🐇奶糖!]
-
-  <img width="150px" src="https://cdn.jsdelivr.net/gh/qishibo/img/202109031655807.jpeg" />
-
-
-## 贡献者
-
-在这里感谢所有为此项目做出贡献的人.
-[![contributors](https://opencollective.com/AnotherRedisDesktopManager/contributors.svg?width=890&button=false)](https://github.com/qishibo/AnotherRedisDesktopManager/graphs/contributors)
-[![backers](https://opencollective.com/AnotherRedisDesktopManager/backers.svg)](https://opencollective.com/AnotherRedisDesktopManager)
 
 
 ## 自定义格式化
