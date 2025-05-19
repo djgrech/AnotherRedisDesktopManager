@@ -72,18 +72,18 @@ function createWindow() {
     mainWindow.loadURL(url.format({
       protocol: 'file',
       pathname: path.join(__dirname, 'index.html'),
-      query: {version: app.getVersion(), dark: nativeTheme.shouldUseDarkColors},
+      query: { version: app.getVersion(), dark: nativeTheme.shouldUseDarkColors },
     }));
   } else {
     mainWindow.loadURL(url.format({
       protocol: 'http',
       host: 'localhost:9988',
-      query: {version: app.getVersion(), dark: nativeTheme.shouldUseDarkColors},
+      query: { version: app.getVersion(), dark: nativeTheme.shouldUseDarkColors },
     }));
   }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on('close', () => {
     mainWindow.webContents.send('closingWindow');
@@ -157,7 +157,7 @@ nativeTheme.on('updated', () => {
   setTimeout(() => {
     mainWindow.webContents.send('os-theme-updated', {
       shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
-      themeSource: nativeTheme.themeSource
+      themeSource: nativeTheme.themeSource,
     });
   }, 50);
 });
