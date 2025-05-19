@@ -7,6 +7,7 @@ export default {
     let settings = localStorage.getItem('settings');
     settings = settings ? JSON.parse(settings) : {};
 
+    settings = {};
     return key ? settings[key] : settings;
   },
   saveSettings(settings) {
@@ -47,14 +48,31 @@ export default {
   addConnection(connection) {
     this.editConnectionByKey(connection, '');
   },
-  getConnections(returnList = false) {
+  async getConnections(returnList = false) {
     let connections = localStorage.connections || '{}';
 
     connections = JSON.parse(connections);
 
+    console.log("hello");
+    // var response = fetch('http://localhost:3001/api/pods')
+    //   .then(res => res.json())
+    //   .then(data=>console.log(data));
+    //connections = {};
+
+    var response = await fetch('http://localhost:3001/api/pods');
+    var result = await response.json();
+
+    console.log(result);
+
     if (returnList) {
+      connections["test"] = {host:'localhost', port:7000, separator: ":", name:"localhost@7000"};
       connections = Object.keys(connections).map(key => connections[key]);
+
+
+     // connections.addConnection({host:'test', port:7000, separator: ":", name:"localhost@7000"});
+
       this.sortConnections(connections);
+      console.log(connections);
     }
 
     return connections;
@@ -110,8 +128,8 @@ export default {
   setConnections(connections) {
     localStorage.connections = JSON.stringify(connections);
   },
-  deleteConnection(connection) {
-    const connections = this.getConnections();
+  async deleteConnection(connection) {
+    const connections = await this.getConnections();
     const key = this.getConnectionKey(connection);
 
     delete connections[key];
@@ -188,5 +206,5 @@ export default {
     }
 
     willRemovedKeys.forEach(k => localStorage.removeItem(k));
-  },
+  }
 };

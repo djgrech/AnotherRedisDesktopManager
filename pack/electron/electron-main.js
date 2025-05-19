@@ -60,6 +60,7 @@ function createWindow() {
     },
   });
 
+
   if (lastWinStage.maximized) {
     mainWindow.maximize();
   }
@@ -80,7 +81,7 @@ function createWindow() {
   }
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on('close', () => {
     mainWindow.webContents.send('closingWindow');

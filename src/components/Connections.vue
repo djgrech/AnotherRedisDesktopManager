@@ -63,8 +63,8 @@ export default {
     },
   },
   methods: {
-    initConnections() {
-      const connections = storage.getConnections(true);
+    async initConnections() {
+      const connections = await storage.getConnections(true);
       const slovedConnections = [];
       // this.connections = [];
 
