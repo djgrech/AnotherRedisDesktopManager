@@ -260,8 +260,14 @@ export default {
           break;
         }
         case 'export': {
-          this.showMultiSelect();
-          this.exportBatch();
+          if (!this.multiOperating) {
+            this.$refs.veTree.setChecked(this.rightClickNode.key, true);
+            this.showMultiSelect();
+          }
+          else {
+            this.exportBatch();
+          }
+
           break;
         }
         case 'load_cur_folder': {
@@ -285,6 +291,7 @@ export default {
         }
       }
 
+      this.hideMultiSelect();
       this.$bus.$emit('openDelBatch', this.client, this.config.connectionName, rule);
     },
     exportBatch() {
@@ -303,6 +310,7 @@ export default {
         }
       }
 
+      this.hideMultiSelect();
       this.$emit('exportBatch', keys);
     },
     clickKey(key, newTab = false) {
